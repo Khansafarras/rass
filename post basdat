@@ -1,0 +1,211 @@
+Baik! Berdasarkan gambar yang kamu kirim, tugas **Post Test** ini meminta kamu untuk menganalisis dua skenario (Kasus C dan Kasus D) dan melakukan langkah-langkah berikut:
+
+---
+
+## ⚕️ **Skenario Kasus C — Apotek**
+
+### 1️⃣ **Identifikasi Entitas Kuat & Entitas Lemah**
+
+**Entitas kuat:**
+
+* Pelanggan
+* Apoteker
+* Obat
+* Resep
+
+**Entitas lemah:**
+
+* Transaksi (karena bergantung pada pelanggan & resep)
+* Rak (bergantung pada obat yang ditempatkan)
+
+---
+
+### 2️⃣ **Menentukan Atribut, Primary Key, dan Foreign Key**
+
+| Entitas          | Atribut                                          | Kunci Primer | Kunci Tamu                |
+| ---------------- | ------------------------------------------------ | ------------ | ------------------------- |
+| **Pelanggan**    | ID_Pelanggan, Nama, Alamat, No_Telp              | ID_Pelanggan | -                         |
+| **Apoteker**     | ID_Apoteker, Nama, Shift                         | ID_Apoteker  | -                         |
+| **Obat**         | ID_Obat, Nama_Obat, Jenis, Harga, Stok, ID_Rak   | ID_Obat      | ID_Rak                    |
+| **Rak**          | ID_Rak, Lokasi_Rak                               | ID_Rak       | -                         |
+| **Resep**        | ID_Resep, Tanggal, ID_Pelanggan, ID_Apoteker     | ID_Resep     | ID_Pelanggan, ID_Apoteker |
+| **Detail_Resep** | ID_Detail, ID_Resep, ID_Obat, Jumlah             | ID_Detail    | ID_Resep, ID_Obat         |
+| **Transaksi**    | ID_Transaksi, ID_Pelanggan, Tanggal, Total_Harga | ID_Transaksi | ID_Pelanggan              |
+
+---
+
+### 3️⃣ **Relasi dan Kardinalitas**
+
+| Relasi                | Kardinalitas | Keterangan                                      |
+| --------------------- | ------------ | ----------------------------------------------- |
+| Pelanggan — Resep     | 1 : M        | Satu pelanggan dapat memiliki banyak resep      |
+| Apoteker — Resep      | 1 : M        | Satu apoteker membuat banyak resep              |
+| Resep — Detail_Resep  | 1 : M        | Satu resep berisi banyak obat                   |
+| Obat — Detail_Resep   | 1 : M        | Satu obat bisa muncul di banyak resep           |
+| Rak — Obat            | 1 : M        | Satu rak berisi banyak obat                     |
+| Pelanggan — Transaksi | 1 : M        | Satu pelanggan dapat melakukan banyak transaksi |
+
+---
+
+### 4️⃣ **Desain Model Data (ERD di Draw.io)**
+
+Kamu bisa menggambar dengan struktur berikut (hubungan seperti di atas):
+
+```
+Pelanggan ---< Resep >--- Apoteker
+     |                   |
+     v                   v
+Transaksi             Detail_Resep >--- Obat --- Rak
+```
+
+---
+
+### 5️⃣ **Struktur Fisik Tabel (SQL Example)**
+
+```sql
+CREATE TABLE Pelanggan (
+  ID_Pelanggan CHAR(5) PRIMARY KEY,
+  Nama VARCHAR(50),
+  Alamat VARCHAR(100),
+  No_Telp VARCHAR(15)
+);
+
+CREATE TABLE Apoteker (
+  ID_Apoteker CHAR(5) PRIMARY KEY,
+  Nama VARCHAR(50),
+  Shift VARCHAR(20)
+);
+
+CREATE TABLE Rak (
+  ID_Rak CHAR(5) PRIMARY KEY,
+  Lokasi_Rak VARCHAR(30)
+);
+
+CREATE TABLE Obat (
+  ID_Obat CHAR(5) PRIMARY KEY,
+  Nama_Obat VARCHAR(50),
+  Jenis VARCHAR(30),
+  Harga DECIMAL(10,2),
+  Stok INT,
+  ID_Rak CHAR(5),
+  FOREIGN KEY (ID_Rak) REFERENCES Rak(ID_Rak)
+);
+
+CREATE TABLE Resep (
+  ID_Resep CHAR(5) PRIMARY KEY,
+  Tanggal DATE,
+  ID_Pelanggan CHAR(5),
+  ID_Apoteker CHAR(5),
+  FOREIGN KEY (ID_Pelanggan) REFERENCES Pelanggan(ID_Pelanggan),
+  FOREIGN KEY (ID_Apoteker) REFERENCES Apoteker(ID_Apoteker)
+);
+
+CREATE TABLE Detail_Resep (
+  ID_Detail CHAR(5) PRIMARY KEY,
+  ID_Resep CHAR(5),
+  ID_Obat CHAR(5),
+  Jumlah INT,
+  FOREIGN KEY (ID_Resep) REFERENCES Resep(ID_Resep),
+  FOREIGN KEY (ID_Obat) REFERENCES Obat(ID_Obat)
+);
+
+CREATE TABLE Transaksi (
+  ID_Transaksi CHAR(5) PRIMARY KEY,
+  ID_Pelanggan CHAR(5),
+  Tanggal DATE,
+  Total_Harga DECIMAL(10,2),
+  FOREIGN KEY (ID_Pelanggan) REFERENCES Pelanggan(ID_Pelanggan)
+);
+```
+
+---
+
+## 🏢 **Skenario Kasus D — Pemerintah Daerah**
+
+### 1️⃣ Entitas Kuat & Lemah
+
+**Entitas kuat:**
+
+* Unit_Kerja
+* Sistem_Informasi
+* Karyawan
+
+**Entitas lemah:**
+
+* Akun (karena tergantung pada Karyawan dan Sistem Informasi)
+
+---
+
+### 2️⃣ Atribut dan Kunci
+
+| Entitas              | Atribut                                         | Kunci Primer | Kunci Tamu         |
+| -------------------- | ----------------------------------------------- | ------------ | ------------------ |
+| **Unit_Kerja**       | ID_Unit, Nama_Unit, Gedung, Jenis_Layanan       | ID_Unit      | -                  |
+| **Sistem_Informasi** | ID_SI, Nama_SI, Fungsi, ID_Unit                 | ID_SI        | ID_Unit            |
+| **Karyawan**         | ID_Karyawan, Nama, Jabatan, ID_Unit             | ID_Karyawan  | ID_Unit            |
+| **Akun**             | ID_Akun, Username, Password, ID_Karyawan, ID_SI | ID_Akun      | ID_Karyawan, ID_SI |
+
+---
+
+### 3️⃣ Relasi dan Kardinalitas
+
+| Relasi                        | Kardinalitas | Keterangan                                    |
+| ----------------------------- | ------------ | --------------------------------------------- |
+| Unit_Kerja — Sistem_Informasi | 1 : M        | Satu unit kerja punya banyak sistem informasi |
+| Unit_Kerja — Karyawan         | 1 : M        | Satu unit kerja punya banyak karyawan         |
+| Karyawan — Akun               | 1 : 1        | Setiap karyawan punya satu akun               |
+| Sistem_Informasi — Akun       | 1 : M        | Satu sistem bisa diakses oleh banyak akun     |
+
+---
+
+### 4️⃣ Desain Model Data (ERD di Draw.io)
+
+```
+Unit_Kerja ---< Karyawan --- Akun >--- Sistem_Informasi
+         |
+         v
+   Sistem_Informasi
+```
+
+---
+
+### 5️⃣ Struktur Fisik Tabel (SQL Example)
+
+```sql
+CREATE TABLE Unit_Kerja (
+  ID_Unit CHAR(5) PRIMARY KEY,
+  Nama_Unit VARCHAR(50),
+  Gedung VARCHAR(50),
+  Jenis_Layanan VARCHAR(50)
+);
+
+CREATE TABLE Sistem_Informasi (
+  ID_SI CHAR(5) PRIMARY KEY,
+  Nama_SI VARCHAR(50),
+  Fungsi VARCHAR(50),
+  ID_Unit CHAR(5),
+  FOREIGN KEY (ID_Unit) REFERENCES Unit_Kerja(ID_Unit)
+);
+
+CREATE TABLE Karyawan (
+  ID_Karyawan CHAR(5) PRIMARY KEY,
+  Nama VARCHAR(50),
+  Jabatan VARCHAR(30),
+  ID_Unit CHAR(5),
+  FOREIGN KEY (ID_Unit) REFERENCES Unit_Kerja(ID_Unit)
+);
+
+CREATE TABLE Akun (
+  ID_Akun CHAR(5) PRIMARY KEY,
+  Username VARCHAR(30),
+  Password VARCHAR(30),
+  ID_Karyawan CHAR(5),
+  ID_SI CHAR(5),
+  FOREIGN KEY (ID_Karyawan) REFERENCES Karyawan(ID_Karyawan),
+  FOREIGN KEY (ID_SI) REFERENCES Sistem_Informasi(ID_SI)
+);
+```
+
+---
+
+Apakah kamu mau aku bantu **buatkan gambar ERD-nya di Draw.io (versi diagram visualnya)** biar langsung bisa kamu lampirkan di laporan post test?
