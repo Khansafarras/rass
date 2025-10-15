@@ -1,0 +1,45 @@
+// Soal 2 - Mahasiswa
+class Mahasiswa {
+    String nama;
+    double ipk;
+
+    // Constructor
+    Mahasiswa(String n, double i) {
+        nama = n;
+        ipk = i;
+    }
+
+    // Method untuk menentukan kategori prestasi
+    String kategori() {
+        if (ipk >= 3.50)
+            return "Cumlaude";
+        else if (ipk >= 3.00)
+            return "Sangat Baik";
+        else if (ipk >= 2.50)
+            return "Baik";
+        else
+            return "Cukup";
+    }
+
+    // Method untuk menampilkan data mahasiswa
+    void tampilkanData() {
+        System.out.println("Nama : " + nama);
+        System.out.println("IPK  : " + ipk);
+        System.out.println("Kategori Prestasi : " + kategori());
+    }
+}
+
+public class Main2 {
+    public static void main(String[] args) {
+        Mahasiswa m1 = new Mahasiswa("Khansa Farras", 3.72);
+        Mahasiswa m2 = new Mahasiswa("Dimas Saputra", 2.85);
+        Mahasiswa m3 = new Mahasiswa("Aulia Rahman", 2.40);
+
+        System.out.println("=== Data Mahasiswa ===");
+        m1.tampilkanData();
+        System.out.println();
+        m2.tampilkanData();
+        System.out.println();
+        m3.tampilkanData();
+    }
+}
